@@ -5,10 +5,11 @@ import java.util.logging.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.*;
-import com.jme3.scene.Geometry;
+import com.jme3.scene.*;
 import com.jme3.scene.shape.Box;
 
 import input.Input;
+import terrain.DigitalElevationModelData;
 
 /*
  * Contains a test to load DEM data from Seattle and render in on a TerrainQuad
@@ -18,9 +19,17 @@ public class TerrainTest extends SimpleApplication{
 	public static void run(){
 		System.out.println("Starting Terrain Test");
 		TerrainTest test = new TerrainTest();
+		
+		DigitalElevationModelData.test();
+		
 		test.start();
 	}
 	
+	
+	//for use elsewhere
+	public Node getRootNode(){
+		return rootNode;
+	}
 	
 	@Override
 	public void simpleInitApp(){

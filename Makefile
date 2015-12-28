@@ -9,9 +9,15 @@ FS_DIRECTORY=$(FS)
 JME3_DIRECTORY=$(FS_DIRECTORY)/dependencies/jmonkeyengine/engine/
 JME3_JARS=$(shell find $(JME3_DIRECTORY) -type f -iname '*.jar')
 
+#GDAL dependencies
+GDAL_SWIG_DIRECTORY=$(FS_DIRECTORY)/dependencies/gdal-2.0.1/swig/java/
+GDAL_JAR=$(GDAL_SWIG_DIRECTORY)/gdal.jar
+GDAL_SOS=$(shell find $(GDAL_SWIG_DIRECTORY) -type f -iname '*.so')
+GDAL_CP=$(GDAL_JAR) $(GDAL_SOS)
+
 #classpath string for external jars
 SPACE=$(null) $(null)
-CLASSPATH=$(subst $(SPACE),:,$(JME3_JARS))
+CLASSPATH=$(subst $(SPACE),:,$(JME3_JARS) $(GDAL_CP))
 
 #Renderer
 SRC_FOLDER=src
