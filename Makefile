@@ -2,9 +2,18 @@ JAVAC=javac
 JAVA=java
 CFLAGS=
 
+#Setup External Dependencies
 FS_DIRECTORY=$(FS)
-JME3_DIRECTORY=$(FS_DIRECTORY)/dependencies/jmonkeyengine
 
+#JME3 jars
+JME3_DIRECTORY=$(FS_DIRECTORY)/dependencies/jmonkeyengine/engine/
+JME3_JARS=$(shell find $(JME3_DIRECTORY) -type f -iname '*.jar')
+
+#classpath string for external jars
+SPACE=$(null) $(null)
+CLASSPATH=$(subst $(SPACE),:,$(JME3_JARS))
+
+#Renderer
 SRC_FOLDER=src
 BIN_FOLDER=bin
 MAIN_CLASS=Main
@@ -14,12 +23,12 @@ SOURCES=$(shell find $(SRC_FOLDER) -type f -iname '*.java')
 #basic compilation
 .phony: exe
 exe: $(SOURCES)
-	$(JAVAC) $(CFLAGS) -d $(BIN_FOLDER)/ $^
+	$(JAVAC) $(CFLAGS) -cp $(CLASSPATH) -d $(BIN_FOLDER)/ $^
 
 #run without recompiling (make exe must be run first)
 .phony: run
 run:
-	$(JAVA) -cp `pwd`/$(BIN_FOLDER)/ $(MAIN_CLASS)
+	$(JAVA) -cp $(CLASSPATH):`pwd`/$(BIN_FOLDER)/ $(MAIN_CLASS)
 
 #force compilation
 .phony: .run
@@ -33,4 +42,4 @@ clobber:
 #test
 .phony: test
 test:
-	echo $(FS_DIRECTORY)
+	echo $(CLASSPATH)
