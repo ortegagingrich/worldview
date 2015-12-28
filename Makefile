@@ -3,7 +3,7 @@ JAVA=java
 CFLAGS=
 
 FS_DIRECTORY=$(FS)
-JME3_DIRECTORY=$(FS_DIRECTORY)/jmonkeyengine
+JME3_DIRECTORY=$(FS_DIRECTORY)/dependencies/jmonkeyengine
 
 SRC_FOLDER=src
 BIN_FOLDER=bin
