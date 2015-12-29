@@ -6,7 +6,7 @@ package io;
 import java.io.IOException;
 import java.nio.*;
 import java.nio.file.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class File{
 	
@@ -26,16 +26,14 @@ public class File{
 			
 			//get all bytes from the file and load them into a buffer
 			byte[] bytes = Files.readAllBytes(Paths.get(filepath));
-			
-			System.out.println(bytes.length);
-			for(byte b : bytes){
-				System.out.println(binary(b));
-			}
-			
 			ByteBuffer buffer = ByteBuffer.wrap(bytes);
 			buffer.order(ByteOrder.LITTLE_ENDIAN);
-			for(int i = 0; i < 3; i++){
-				System.out.println(buffer.getFloat());
+			
+			//populate data array
+			for(int i = 0; i < size_i; i++){
+				for(int j = 0; j < size_j; j++){
+					array[i][j] = buffer.getFloat();
+				}
 			}
 			
 		}catch(IOException ex){
@@ -55,7 +53,9 @@ public class File{
 	public static void test(){
 		String filepath = "/home/jog/scratch/simple.elev";
 		try{
-			float[][] shouldbepi = loadNumpyArrayFloat32(filepath, 1, 1);
+			float[][] array = loadNumpyArrayFloat32(filepath, 2, 2);
+			System.out.println(Arrays.deepToString(array));
+			
 			
 		}catch(Exception ex){
 			ex.printStackTrace();
