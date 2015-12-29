@@ -14,6 +14,10 @@ public class DigitalElevationModelData{
 	private String filename;
 	private String filepath;
 	
+	private float[][] dataArray = null;
+	private boolean isLoaded = false;
+	
+	
 	public static void test(){
 		System.out.println("Starting DEM test");
 		
@@ -29,8 +33,8 @@ public class DigitalElevationModelData{
 		
 		if(type == DEMType.ARCSECOND){
 			String filelabel = generateFileLabel(t, lat, lon);
-			filepath = File.DEM_ARCSECOND_PATH + filelabel + "/";
-			filename = "img" + filelabel + "_1.img";
+			filepath = File.DEM_ARCSECOND_PATH + "/";
+			filename = filelabel + ".elev";
 			
 			//assume standard range
 			high_lat = lat;
@@ -52,14 +56,30 @@ public class DigitalElevationModelData{
 	}
 	
 	
+	private void loadDataFromFile(){
+		try{
+			dataArray = File.loadNumpyArrayFloat32(filepath + filename, 3612, 3612);
+			
+			isLoaded = true;
+		}catch(Exception ex){
+			System.out.println("Failed to load DEM from file: " + filepath + filename);
+		}
+		
+		isLoaded = true;
+	}
+	
+	private void unloadData(){
+		dataArray = null;
+		isLoaded = false;
+	}
+	
 	//retrieve array containing DEM data
 	public float[][] getData(){
-		float[][] data = new float[][]{};
+		if(!isLoaded){
+			loadDataFromFile();
+		}
 		
-		//first load the file
-		//TODO:
-		
-		return data;
+		return dataArray;
 	}
 	
 	

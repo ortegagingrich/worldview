@@ -1,4 +1,5 @@
 import run.TerrainTest;
+import io.File;
 
 //Just a small main class for our render tests
 public class Main{
@@ -6,6 +7,8 @@ public class Main{
 		System.out.println("Starting Renderer.");
 		
 		//go directly to terrain test
-		TerrainTest.run();
+		//TerrainTest.run();
+		
+		File.test();
 	}
 }
