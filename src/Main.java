@@ -7,8 +7,6 @@ public class Main{
 		System.out.println("Starting Renderer.");
 		
 		//go directly to terrain test
-		//TerrainTest.run();
-		
-		File.test();
+		TerrainTest.run();
 	}
 }

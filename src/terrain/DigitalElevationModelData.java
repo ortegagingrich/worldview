@@ -24,7 +24,7 @@ public class DigitalElevationModelData{
 		DigitalElevationModelData testDEM = new DigitalElevationModelData(DEMType.ARCSECOND, 48, -123);
 		
 		float[][] data = testDEM.getData();
-		System.out.println(data.length);
+		System.out.println(data[0][1]);
 	}
 	
 	
