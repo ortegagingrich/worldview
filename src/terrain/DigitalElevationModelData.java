@@ -3,7 +3,6 @@
  */
 package terrain;
 
-import org.gdal.gdal.*;
 
 import io.File;
 import terrain.DEMType;
@@ -20,7 +19,7 @@ public class DigitalElevationModelData{
 		
 		DigitalElevationModelData testDEM = new DigitalElevationModelData(DEMType.ARCSECOND, 48, -123);
 		
-		float[] data = testDEM.getData();
+		float[][] data = testDEM.getData();
 		System.out.println(data.length);
 	}
 	
@@ -54,11 +53,11 @@ public class DigitalElevationModelData{
 	
 	
 	//retrieve array containing DEM data
-	public float[] getData(){
-		float[] data = new float[]{};
+	public float[][] getData(){
+		float[][] data = new float[][]{};
 		
 		//first load the file
-		Dataset dataset = gdal.Open(filepath + filename);
+		//TODO:
 		
 		return data;
 	}

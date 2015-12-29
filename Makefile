@@ -13,7 +13,7 @@ JME3_JARS=$(shell find $(JME3_DIRECTORY) -type f -iname '*.jar')
 GDAL_SWIG_DIRECTORY=$(FS_DIRECTORY)/dependencies/gdal-2.0.1/swig/java/
 GDAL_JAR=$(GDAL_SWIG_DIRECTORY)/gdal.jar
 GDAL_SOS=$(shell find $(GDAL_SWIG_DIRECTORY) -type f -iname '*.so')
-GDAL_CP=$(GDAL_JAR) $(GDAL_SOS)
+GDAL_CP=#$(GDAL_JAR) $(GDAL_SOS)
 
 #classpath string for external jars
 SPACE=$(null) $(null)
