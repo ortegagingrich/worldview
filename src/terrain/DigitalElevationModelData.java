@@ -3,13 +3,16 @@
  */
 package terrain;
 
+import java.lang.Math;
 
 import io.File;
 import terrain.DEMType;
+import math.Interpolation;
 
 public class DigitalElevationModelData{
 	
-	private double low_lat, high_lat, low_lon, high_lon;
+	private double lowLat, highLat, lowLon, highLon;
+	private double dlat, dlon; //in degrees
 	private DEMType type;
 	private String filename;
 	private String filepath;
@@ -21,10 +24,14 @@ public class DigitalElevationModelData{
 	public static void test(){
 		System.out.println("Starting DEM test");
 		
-		DigitalElevationModelData testDEM = new DigitalElevationModelData(DEMType.ARCSECOND, 48, -123);
+		DigitalElevationModelData testDEM = new DigitalElevationModelData(DEMType.ARCSECOND, 35, -119);
 		
 		float[][] data = testDEM.getData();
-		System.out.println(data[0][1]);
+		System.out.println(data[6][6]);
+		System.out.println(data[6][7]);
+		
+		float delta = 0.5f/3600;
+		System.out.println(testDEM.getElevation(35.0-delta,-119.0+3.0*delta));
 	}
 	
 	
@@ -37,10 +44,12 @@ public class DigitalElevationModelData{
 			filename = filelabel + ".elev";
 			
 			//assume standard range
-			high_lat = lat;
-			high_lon = lon + 1.0;
-			low_lat = lat - 1.0;
-			low_lon = lon;
+			highLat = lat;
+			highLon = lon + 1.0;
+			lowLat = lat - 1.0;
+			lowLon = lon;
+			dlat = 1.0/3600.0;
+			dlon = 1.0/3600.0;
 			
 		}else if(type == DEMType.ETOPO){
 			//TODO: Fill me in.
@@ -80,6 +89,47 @@ public class DigitalElevationModelData{
 		}
 		
 		return dataArray;
+	}
+	
+	
+	public float getElevation(double lat, double lon){
+		/**
+		 * float getElevation(double lat, double lon)
+		 * 
+		 * Returns the interpolated elevation at the specified coordinates if
+		 * they lie within the domain of this DEM.  Otherwise, 0.0f is returned.
+		 */
+		if(!isLoaded){
+			loadDataFromFile();
+		}
+		
+		//First, compute offset fractions; i,j = 0 represents northwest corner.
+		double lonFrac = lon - lowLon;
+		double latFrac = highLat - lat;
+		
+		//if outside of range, just return the default value
+		if(lonFrac < -0.00111 || latFrac < -0.00111 || lonFrac > 1.00111 || latFrac > 1.00111){
+			return 0.0f;
+		}
+		
+		//lower indices to be used for interpolation
+		int lonIndex = 5 + (int) Math.round(3600 * lonFrac); //West
+		int latIndex = 5 + (int) Math.round(3600 * latFrac); //North
+		
+		//retrieve values for interpolation
+		float valNW = dataArray[latIndex][lonIndex];
+		float valNE = dataArray[latIndex][lonIndex + 1];
+		float valSW = dataArray[latIndex + 1][lonIndex];
+		float valSE = dataArray[latIndex + 1][lonIndex + 1];
+		
+		//get weights for interpolation
+		float eWeight = ((float) (lonFrac/dlon)) + 5.5f - lonIndex;
+		float sWeight = ((float) (latFrac/dlat)) + 5.5f - latIndex;
+		
+		System.out.println(sWeight);
+		System.out.println(eWeight);
+		
+		return Interpolation.bilinear(valNW, valNE, valSW, valSE, sWeight, eWeight);
 	}
 	
 	
