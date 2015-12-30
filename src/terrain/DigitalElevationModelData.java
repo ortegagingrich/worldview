@@ -13,6 +13,7 @@ public class DigitalElevationModelData{
 	
 	private double lowLat, highLat, lowLon, highLon;
 	private double dlat, dlon; //in degrees
+	private int nlat, nlon; //not including overlapping cells
 	private DEMType type;
 	private String filename;
 	private String filepath;
@@ -32,6 +33,17 @@ public class DigitalElevationModelData{
 		
 		float delta = 0.5f/3600;
 		System.out.println(testDEM.getElevation(35.0-delta,-119.0+3.0*delta));
+		
+		//quick timing test
+		float trials = 1e8f;
+		float dummy;
+		long startTime = System.currentTimeMillis();
+		for(int i = 0; i < trials; i++){
+			dummy = testDEM.getElevation(34.5, -118.5);
+		}
+		long endTime = System.currentTimeMillis();
+		System.out.println("Timing data: ");
+		System.out.println((endTime - startTime)/1000.0);
 	}
 	
 	
@@ -48,6 +60,8 @@ public class DigitalElevationModelData{
 			highLon = lon + 1.0;
 			lowLat = lat - 1.0;
 			lowLon = lon;
+			nlat = 3600;//interior cells
+			nlon = 3600;
 			dlat = 1.0/3600.0;
 			dlon = 1.0/3600.0;
 			
@@ -113,8 +127,8 @@ public class DigitalElevationModelData{
 		}
 		
 		//lower indices to be used for interpolation
-		int lonIndex = 5 + (int) Math.round(3600 * lonFrac); //West
-		int latIndex = 5 + (int) Math.round(3600 * latFrac); //North
+		int lonIndex = 5 + (int) Math.round(nlon * lonFrac); //West
+		int latIndex = 5 + (int) Math.round(nlat * latFrac); //North
 		
 		//retrieve values for interpolation
 		float valNW = dataArray[latIndex][lonIndex];
@@ -126,8 +140,6 @@ public class DigitalElevationModelData{
 		float eWeight = ((float) (lonFrac/dlon)) + 5.5f - lonIndex;
 		float sWeight = ((float) (latFrac/dlat)) + 5.5f - latIndex;
 		
-		System.out.println(sWeight);
-		System.out.println(eWeight);
 		
 		return Interpolation.bilinear(valNW, valNE, valSW, valSE, sWeight, eWeight);
 	}
