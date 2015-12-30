@@ -65,6 +65,8 @@ public class DigitalElevationModelData{
 			dlat = 1.0/3600.0;
 			dlon = 1.0/3600.0;
 			
+		}else if(type == DEMType.TWO_ARCSECOND){
+			//TODO: Fill me in
 		}else if(type == DEMType.ETOPO){
 			//TODO: Fill me in.
 		}

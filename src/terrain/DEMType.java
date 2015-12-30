@@ -5,5 +5,6 @@ package terrain;
 
 public enum DEMType{
 	ETOPO,
-	ARCSECOND
+	ARCSECOND,
+	TWO_ARCSECOND
 }
