@@ -49,3 +49,8 @@ clobber:
 .phony: test
 test:
 	echo $(CLASSPATH)
+
+#print number of lines
+.phony: line_count
+line_count:
+	find . -name '*.java' | xargs wc -l
