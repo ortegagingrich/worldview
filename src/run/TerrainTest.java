@@ -10,6 +10,7 @@ import com.jme3.scene.shape.Box;
 
 import input.Input;
 import terrain.DigitalElevationModelData;
+import math.ProjectionStereographic;
 import math.Array;
 
 /*
@@ -21,8 +22,8 @@ public class TerrainTest extends SimpleApplication{
 		System.out.println("Starting Terrain Test");
 		TerrainTest test = new TerrainTest();
 		
-		DigitalElevationModelData.test();
-		
+		//DigitalElevationModelData.test();
+		ProjectionStereographic.test();
 		
 		//test.start();
 	}
