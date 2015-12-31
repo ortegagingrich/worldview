@@ -1,3 +1,9 @@
+/*
+ * Some pointers regarding the JME3 coordinate system:
+ * x: north(+)/south(-)
+ * y: up(+)/down(-)
+ * z: east(+)/west(-)
+ */
 package run;
 
 import java.util.logging.*;
@@ -19,13 +25,14 @@ import com.jme3.renderer.Camera;
 import input.Input;
 import terrain.DigitalElevationModelData;
 import terrain.TerrainManager;
-import math.ProjectionStereographic;
-import math.ArrayUtils;
+import math.*;
 
-/*
+/**
  * Contains a test to load DEM data from Seattle and render in on a TerrainQuad
  */
 public class TerrainTest extends SimpleApplication{
+	
+	public final TerrainManager terrainManager = new TerrainManager();
 	
 	public static void run(){
 		System.out.println("Starting Terrain Test");
@@ -58,19 +65,81 @@ public class TerrainTest extends SimpleApplication{
 		Camera cam = getCamera();
 		System.out.format("Current frustum far: %f\n", cam.getFrustumFar());
 		cam.setFrustumFar(500f*1000f);
+		cam.setLocation(new Vector3f(0f, 10f, 500f));
 		
 		makeBox();
-		makeTestTerrain();
+		makeSeattle();
+		//makeTestTerrain();
 	}
 	
 	
 	private void makeBox(){
-		Box b = new Box(1, 1, 1);
+		Box b = new Box(15, 5000, 50);
+		Box b2 = new Box(50, 5000, 15);
 		Geometry geom = new Geometry("Box", b);
+		Geometry geom2 = new Geometry("Box2", b2);
+		geom.move(0f, 5000f, 0f);
+		geom2.move(-50f, 5000f, 0f);
 		Material mat = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
 		//mat.setColor("Color", ColorRGBA.Green);
 		geom.setMaterial(mat);
-		rootNode.attachChild(geom);
+		geom2.setMaterial(mat);
+		Node n = new Node();
+		n.attachChild(geom);
+		n.attachChild(geom2);
+		rootNode.attachChild(n);
+		
+		
+	}
+	
+	
+	private void makeSeattle(){
+		
+		//make projection
+		double centerLat = 47.604244;
+		double centerLon = -122.446589;
+		Projection projection = new ProjectionStereographic(centerLat, centerLon);
+		
+		Node terrainNode = new Node();
+		
+		//just make a terrain quad
+		Material mat = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
+		
+		int patchDimensions = 4*512;
+		int jme3num = 64;
+		float patchWidth = 200*1000f; //width in meters
+		float scaleFactor = patchWidth/patchDimensions;
+		
+		//arrays
+		float[] elevArray = new float[(patchDimensions+1) * (patchDimensions+1)];
+		
+		for(int i = 0; i <= patchDimensions; i++){
+			for(int j = 0; j <= patchDimensions; j++){
+				int index = i*(patchDimensions+1) + j;
+				
+				//first, get x and z values from j and i
+				float xval = scaleFactor * (j - (0.5f * patchDimensions));
+				float zval = scaleFactor * (i - (0.5f * patchDimensions));
+				
+				//convert to lat/lon
+				//Note: x and z must be switched due to JME3's orientation
+				CoordinateLatLon coordinate = projection.transformInverse(zval, xval);
+				double lat = coordinate.lat;
+				double lon = coordinate.lon;
+				
+				//finally, get elevation data
+				elevArray[index] = terrainManager.getElevation(lat, lon);
+				//System.out.format("%f %f : %f\n", lat, lon, elevArray[index]);
+			}
+		}
+		
+		TerrainQuad terrain = new TerrainQuad("sea", jme3num+1, patchDimensions + 1, elevArray);
+		terrain.setMaterial(mat);
+		
+		terrain.setLocalScale(scaleFactor, 1f, scaleFactor);
+		terrainNode.attachChild(terrain);
+		
+		rootNode.attachChild(terrainNode);
 	}
 	
 	
@@ -148,7 +217,7 @@ public class TerrainTest extends SimpleApplication{
 			printMoveSpeed = true;
 		}
 		
-		if(printMoveSpeed){
+		if(printMoveSpeed && false){
 			String out = "Camera moveSpeed = %f%n";
 			System.out.format(out, flyCam.getMoveSpeed());
 		}

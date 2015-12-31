@@ -79,6 +79,7 @@ public class TerrainManager {
 			return dem.getElevation(lat, lon);
 		}
 		
+		
 		return 0.0f;
 	}
 	
@@ -88,8 +89,8 @@ public class TerrainManager {
 	public static void test(){
 		TerrainManager tm = new TerrainManager();
 		
-		double testLat = 33.765219;
-		double testLon = -118.364572;
+		double testLat = 47.622227;//33.765219;
+		double testLon = -122.419904;//-118.364572;
 		float testelev = tm.getElevation(testLat, testLon);
 		System.out.println(testelev * 3.28084);
 		
