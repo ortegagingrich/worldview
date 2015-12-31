@@ -5,6 +5,7 @@
  */
 package terrain;
 
+import java.lang.Math;
 import java.util.HashMap;
 
 import io.FileUtils;
@@ -23,7 +24,7 @@ public class TerrainManager {
 	
 	
 	public void reloadDEMs(){
-		/*
+		/**
 		 * Reloads DEM files, taking changes that may have occurred since last loading
 		 */
 		
@@ -49,11 +50,51 @@ public class TerrainManager {
 	}
 	
 	
+	public float getElevation(double lat, double lon){
+		/**
+		 * float getElevation(double lat, double lon)
+		 * 
+		 * Returns the best approximate elevation at the specified coordinates.
+		 * This approximation is obtained by interpolating the finest DEM
+		 * covering the area.
+		 */
+		//TODO: Generalize this to allow for other hemispheres
+		
+		DigitalElevationModelData dem;
+		
+		//for now, we just look for the matching one arc-second data
+		int latBlock = (int) Math.ceil(lat);
+		int lonBlock = (int) Math.ceil(-lon);
+		String key = String.format("n%dw%d", latBlock, lonBlock);
+		
+		//check if arcsecond DEM is available
+		dem = DEM_1_as.get(key);
+		if(dem != null){
+			return dem.getElevation(lat, lon);
+		}
+		
+		return 0.0f;
+	}
 	
 	
 	
 	//tests
 	public static void test(){
 		TerrainManager tm = new TerrainManager();
+		
+		double testLat = 33.765219;
+		double testLon = -118.364572;
+		float testelev = tm.getElevation(testLat, testLon);
+		System.out.println(testelev * 3.28084);
+		
+		
+		float trials = 1e6f;
+		long startTime = System.currentTimeMillis();
+		for(int i = 0; i < trials; i++){
+			testelev = tm.getElevation(testLat, testLon);
+		}
+		long endTime = System.currentTimeMillis();
+		System.out.format("Timing data (elevation:%f): \n", trials);
+		System.out.println((endTime - startTime)/1000.0);
 	}
 }

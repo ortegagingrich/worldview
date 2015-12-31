@@ -88,6 +88,7 @@ public class DigitalElevationModelData{
 		 * Returns the interpolated elevation at the specified coordinates if
 		 * they lie within the domain of this DEM.  Otherwise, 0.0f is returned.
 		 */
+		//TODO: This only works for one arc-second DEMS (6 overlap points).
 		if(!isLoaded){
 			loadDataFromFile();
 		}
