@@ -109,7 +109,7 @@
  	//Some tests
  	public static void test(){
  		System.out.println("Stereographic tests");
- 		//TODO: Insert tests
+ 		
  		Projection p1 = new ProjectionStereographic(46, 47);
  		Projection p2 = new ProjectionStereographic(75, -120);
  		
@@ -134,6 +134,28 @@
  		c2.print();
  		c3.print();
  		c4.print();
+ 		
+ 		//quick timing test
+		float trials = 1e8f;
+		long startTime = System.currentTimeMillis();
+		for(int i = 0; i < trials; i++){
+			p1.transformForward(45.0, 45.0);
+		}
+		long endTime = System.currentTimeMillis();
+		System.out.format("Timing data (forward:%f): \n", trials);
+		System.out.println((endTime - startTime)/1000.0);
+		
+		trials = 1e6f;
+		startTime = System.currentTimeMillis();
+		for(int i = 0; i < trials; i++){
+			p1.transformInverse(res1);
+			p1.transformInverse(res2);
+ 			p2.transformInverse(res3);
+ 			p2.transformInverse(res4);
+		}
+		endTime = System.currentTimeMillis();
+		System.out.format("Timing data (inverse:%f): \n", trials);
+		System.out.println((endTime - startTime)/1000.0);
  	}
  	
  }
