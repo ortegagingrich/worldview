@@ -21,6 +21,7 @@ import com.jme3.terrain.geomipmap.lodcalc.*;
 import com.jme3.texture.*;
 import com.jme3.texture.Texture.WrapMode;
 import com.jme3.renderer.Camera;
+import com.jme3.light.*;
 
 import input.Input;
 import terrain.DigitalElevationModelData;
@@ -68,7 +69,8 @@ public class TerrainTest extends SimpleApplication{
 		cam.setLocation(new Vector3f(0f, 10f, 500f));
 		
 		makeBox();
-		makeSeattle();
+		//makeSeattle();
+		makeClaremont();
 		//makeTestTerrain();
 	}
 	
@@ -93,6 +95,23 @@ public class TerrainTest extends SimpleApplication{
 	}
 	
 	
+	private Material getTerrainMaterial(){
+		Material mat;
+		
+		mat = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
+		Texture grass = assetManager.loadTexture("Textures/Terrain/splat/dirt.jpg");
+		grass.setWrap(WrapMode.Repeat);
+		
+		mat.setTexture("DiffuseMap", grass);
+		//mat.setTexture("Alpha", grass);
+		mat.setFloat("DiffuseMap_0_scale", 1f);
+		
+		
+		mat = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
+		return mat;
+	}
+	
+	
 	private void makeSeattle(){
 		
 		//make projection
@@ -103,16 +122,20 @@ public class TerrainTest extends SimpleApplication{
 		Node terrainNode = new Node();
 		
 		//just make a terrain quad
-		Material mat = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
+		Material mat = getTerrainMaterial();
+
 		
-		int patchDimensions = 4*512;
+		int patchDimensions = 2*512;
 		int jme3num = 64;
-		float patchWidth = 200*1000f; //width in meters
+		float patchWidth = 50*1000f; //width in meters
 		float scaleFactor = patchWidth/patchDimensions;
+		
+		System.out.format("Generating heightmap for %d points", (patchDimensions+1) * (patchDimensions+1));
 		
 		//arrays
 		float[] elevArray = new float[(patchDimensions+1) * (patchDimensions+1)];
 		
+		long startTime = System.currentTimeMillis();
 		for(int i = 0; i <= patchDimensions; i++){
 			for(int j = 0; j <= patchDimensions; j++){
 				int index = i*(patchDimensions+1) + j;
@@ -132,12 +155,82 @@ public class TerrainTest extends SimpleApplication{
 				//System.out.format("%f %f : %f\n", lat, lon, elevArray[index]);
 			}
 		}
+		long endTime = System.currentTimeMillis();
+		System.out.format("Done.  Time taken: %f seconds\n", (endTime - startTime)/1000.0);
 		
 		TerrainQuad terrain = new TerrainQuad("sea", jme3num+1, patchDimensions + 1, elevArray);
 		terrain.setMaterial(mat);
 		
 		terrain.setLocalScale(scaleFactor, 1f, scaleFactor);
 		terrainNode.attachChild(terrain);
+		
+		//add a light
+		DirectionalLight sun = new DirectionalLight();
+		sun.setColor(ColorRGBA.White);
+		sun.setDirection(new Vector3f(0.5f, -0.5f, -0.5f).normalizeLocal());
+		terrainNode.addLight(sun);
+		
+		rootNode.attachChild(terrainNode);
+	}
+	
+	
+	private void makeClaremont(){
+		
+		//make projection
+		double centerLat = 34.110524;
+		double centerLon = -117.728189;
+		Projection projection = new ProjectionStereographic(centerLat, centerLon);
+		
+		Node terrainNode = new Node();
+		
+		//just make a terrain quad
+		Material mat = getTerrainMaterial();
+
+		
+		int patchDimensions = 2*512;
+		int jme3num = 64;
+		float patchWidth = 100*1000f; //width in meters
+		float scaleFactor = patchWidth/patchDimensions;
+		
+		System.out.format("Generating heightmap for %d points", (patchDimensions+1) * (patchDimensions+1));
+		
+		//arrays
+		float[] elevArray = new float[(patchDimensions+1) * (patchDimensions+1)];
+		
+		long startTime = System.currentTimeMillis();
+		for(int i = 0; i <= patchDimensions; i++){
+			for(int j = 0; j <= patchDimensions; j++){
+				int index = i*(patchDimensions+1) + j;
+				
+				//first, get x and z values from j and i
+				float xval = scaleFactor * (j - (0.5f * patchDimensions));
+				float zval = scaleFactor * (i - (0.5f * patchDimensions));
+				
+				//convert to lat/lon
+				//Note: x and z must be switched due to JME3's orientation
+				CoordinateLatLon coordinate = projection.transformInverse(zval, xval);
+				double lat = coordinate.lat;
+				double lon = coordinate.lon;
+				
+				//finally, get elevation data
+				elevArray[index] = terrainManager.getElevation(lat, lon);
+				//System.out.format("%f %f : %f\n", lat, lon, elevArray[index]);
+			}
+		}
+		long endTime = System.currentTimeMillis();
+		System.out.format("Done.  Time taken: %f seconds\n", (endTime - startTime)/1000.0);
+		
+		TerrainQuad terrain = new TerrainQuad("sea", jme3num+1, patchDimensions + 1, elevArray);
+		terrain.setMaterial(mat);
+		
+		terrain.setLocalScale(scaleFactor, 1f, scaleFactor);
+		terrainNode.attachChild(terrain);
+		
+		//add a light
+		DirectionalLight sun = new DirectionalLight();
+		sun.setColor(ColorRGBA.White);
+		sun.setDirection(new Vector3f(0.5f, -0.5f, -0.5f).normalizeLocal());
+		terrainNode.addLight(sun);
 		
 		rootNode.attachChild(terrainNode);
 	}
