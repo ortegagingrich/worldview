@@ -9,6 +9,7 @@ import java.lang.Math;
 import java.util.HashMap;
 
 import io.FileUtils;
+import math.CoordinateLatLon;
 import terrain.DigitalElevationModelData;
 import terrain.DEMType;
 
@@ -47,6 +48,11 @@ public class TerrainManager {
 		}
 		
 		System.out.format("Found %d DEM files at 1 arc-second resolution.\n", DEM_1_as.size());
+	}
+	
+	
+	public float getElevation(CoordinateLatLon coordinate){
+		return getElevation(coordinate.lat, coordinate.lon);
 	}
 	
 	
