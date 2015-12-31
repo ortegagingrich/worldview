@@ -5,7 +5,7 @@ package terrain;
 
 import java.lang.Math;
 
-import io.File;
+import io.FileUtils;
 import terrain.DEMType;
 import math.Interpolation;
 
@@ -22,37 +22,12 @@ public class DigitalElevationModelData{
 	private boolean isLoaded = false;
 	
 	
-	public static void test(){
-		System.out.println("Starting DEM test");
-		
-		DigitalElevationModelData testDEM = new DigitalElevationModelData(DEMType.ARCSECOND, 35, -119);
-		
-		float[][] data = testDEM.getData();
-		System.out.println(data[6][6]);
-		System.out.println(data[6][7]);
-		
-		float delta = 0.5f/3600;
-		System.out.println(testDEM.getElevation(35.0-delta,-119.0+3.0*delta));
-		
-		//quick timing test
-		float trials = 1e8f;
-		float dummy;
-		long startTime = System.currentTimeMillis();
-		for(int i = 0; i < trials; i++){
-			dummy = testDEM.getElevation(34.5, -118.5);
-		}
-		long endTime = System.currentTimeMillis();
-		System.out.println("Timing data: ");
-		System.out.println((endTime - startTime)/1000.0);
-	}
-	
-	
 	public DigitalElevationModelData(DEMType t, int lat, int lon){
 		type = t;
 		
 		if(type == DEMType.ARCSECOND){
 			String filelabel = generateFileLabel(t, lat, lon);
-			filepath = File.DEM_ARCSECOND_PATH + "/";
+			filepath = FileUtils.DEM_ARCSECOND_PATH + "/";
 			filename = filelabel + ".elev";
 			
 			//assume standard range
@@ -81,19 +56,17 @@ public class DigitalElevationModelData{
 	}
 	
 	
-	private void loadDataFromFile(){
+	protected void loadDataFromFile(){
 		try{
-			dataArray = File.loadNumpyArrayFloat32(filepath + filename, 3612, 3612);
+			dataArray = FileUtils.loadNumpyArrayFloat32(filepath + filename, 3612, 3612);
 			
 			isLoaded = true;
 		}catch(Exception ex){
 			System.out.println("Failed to load DEM from file: " + filepath + filename);
 		}
-		
-		isLoaded = true;
 	}
 	
-	private void unloadData(){
+	protected void unloadData(){
 		dataArray = null;
 		isLoaded = false;
 	}
@@ -147,4 +120,29 @@ public class DigitalElevationModelData{
 	}
 	
 	
+	//tests
+	
+	public static void test(){
+		System.out.println("Starting DEM test");
+		
+		DigitalElevationModelData testDEM = new DigitalElevationModelData(DEMType.ARCSECOND, 35, -119);
+		
+		float[][] data = testDEM.getData();
+		System.out.println(data[6][6]);
+		System.out.println(data[6][7]);
+		
+		float delta = 0.5f/3600;
+		System.out.println(testDEM.getElevation(35.0-delta,-119.0+3.0*delta));
+		
+		//quick timing test
+		float trials = 1e8f;
+		float dummy;
+		long startTime = System.currentTimeMillis();
+		for(int i = 0; i < trials; i++){
+			dummy = testDEM.getElevation(34.5, -118.5);
+		}
+		long endTime = System.currentTimeMillis();
+		System.out.println("Timing data: ");
+		System.out.println((endTime - startTime)/1000.0);
+	}
 }

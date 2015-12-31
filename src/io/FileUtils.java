@@ -3,12 +3,13 @@
  */
 package io;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.*;
 import java.nio.file.*;
 import java.util.Arrays;
+import java.util.ArrayList;
 
-public class File{
+public class FileUtils{
 	
 	//May be modified later
 	public static final String FS_PATH = System.getenv("FS") + "/";
@@ -47,6 +48,42 @@ public class File{
 	private static String binary(byte b){
 		return Integer.toBinaryString((b & 0xFF) + 0x100).substring(1);
 	}
+	
+	
+	public static String[] listFilesBase(String directory, String extension){
+		/*
+		 * Returns an array with all basenames (i.e. without extensions) of
+		 * files in the specified directory with the specified extension
+		 */
+		 try{
+		 	File dir = new File(directory);
+		 	File[] files = dir.listFiles();
+		 	
+		 	ArrayList<String> matchingBases = new ArrayList<String>();
+		 	
+		 	for(File file : files){
+		 		String name = file.getName();
+		 		
+		 		String[] parts = name.split("\\.");
+		 		
+		 		if(parts.length == 2){ 
+		 			if(parts[1].equals(extension)){
+		 				matchingBases.add(parts[0]);
+		 			}
+		 		}
+		 		
+		 	}
+		 	
+		 	return matchingBases.toArray(new String[matchingBases.size()]);
+		 	
+		 }catch(Exception ex){
+		 	ex.printStackTrace();
+		 	return new String[]{};
+		 }
+	}
+	
+	
+	
 	
 	
 	//temporary for testing

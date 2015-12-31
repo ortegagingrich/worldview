@@ -1,5 +1,5 @@
 import run.TerrainTest;
-import io.File;
+import io.FileUtils;
 
 //Just a small main class for our render tests
 public class Main{

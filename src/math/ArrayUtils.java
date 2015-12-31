@@ -6,7 +6,7 @@ package math;
 
 import java.util.Arrays;
 
-public class Array {
+public class ArrayUtils {
 	
 	
 	public static double[] linspace(double low, double high, int npts){

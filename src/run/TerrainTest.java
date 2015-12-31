@@ -10,8 +10,9 @@ import com.jme3.scene.shape.Box;
 
 import input.Input;
 import terrain.DigitalElevationModelData;
+import terrain.TerrainManager;
 import math.ProjectionStereographic;
-import math.Array;
+import math.ArrayUtils;
 
 /*
  * Contains a test to load DEM data from Seattle and render in on a TerrainQuad
@@ -23,7 +24,8 @@ public class TerrainTest extends SimpleApplication{
 		TerrainTest test = new TerrainTest();
 		
 		//DigitalElevationModelData.test();
-		ProjectionStereographic.test();
+		//ProjectionStereographic.test();
+		TerrainManager.test();
 		
 		//test.start();
 	}
