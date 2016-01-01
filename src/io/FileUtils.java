@@ -14,6 +14,9 @@ public class FileUtils{
 	//May be modified later
 	public static final String FS_PATH = System.getenv("FS") + "/";
 	
+	//Asset Path
+	public static final String ASSET_PATH = FS_PATH + "render/assets/";
+	
 	//Data Paths
 	public static final String DATA_PATH = FS_PATH + "data/";
 	public static final String DEM_ARCSECOND_PATH = DATA_PATH + "dem/1_arc-second/";
