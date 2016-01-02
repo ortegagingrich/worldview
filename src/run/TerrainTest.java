@@ -78,6 +78,7 @@ public class TerrainTest extends SimpleApplication{
 		Camera cam = getCamera();
 		cam.setFrustumFar(500f*1000f);
 		cam.setLocation(new Vector3f(0f, 1000f, 500f));
+		cam.lookAt(new Vector3f(1e15f, 0f, 0f), new Vector3f(0f, 1f, 0f));
 		
 		viewPort.setBackgroundColor(new ColorRGBA(240.0f/255, 1f, 1f, 1f));
 		makeBox();
@@ -117,8 +118,12 @@ public class TerrainTest extends SimpleApplication{
 		Texture grass = assetManager.loadTexture("Textures/Terrain/splat/dirt.jpg");
 		grass.setWrap(WrapMode.Repeat);
 		
-		Texture grassNormal = assetManager.loadTexture("Textures/Terrain/splat/dirt_normal.png");
+		//Texture grassNormal = assetManager.loadTexture("Textures/Terrain/splat/dirt_normal.png");
+		Texture grassNormal = assetManager.loadTexture("Textures/black.png");
 		grassNormal.setWrap(WrapMode.Repeat);
+		
+		
+		
 		
 		//make a really big texture
 		Image image = grass.getImage();
@@ -128,7 +133,6 @@ public class TerrainTest extends SimpleApplication{
 		
 		
 		mat.setTexture("DiffuseMap", grass);
-		//mat.setTexture("Alpha", grass);
 		mat.setFloat("DiffuseMap_0_scale", 64f);
 		
 		mat.setTexture("NormalMap", grassNormal);
@@ -230,7 +234,7 @@ public class TerrainTest extends SimpleApplication{
 			theta += 0.01;//0.1 * Math.PI;
 		}
 		
-		sun.setDirection(new Vector3f(-1f, (float) -Math.cos(theta), (float) Math.sin(theta)).normalizeLocal());
+		//sun.setDirection(new Vector3f(-1f, (float) -Math.cos(theta), (float) Math.sin(theta)).normalizeLocal());
 	}
 	
 	
