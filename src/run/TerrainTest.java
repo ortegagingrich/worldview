@@ -115,7 +115,10 @@ public class TerrainTest extends SimpleApplication{
 		mat.setFloat("Shininess", 0.0f);
 		
 		
-		Texture grass = assetManager.loadTexture("Textures/Terrain/splat/dirt.jpg");
+		Texture dirt = assetManager.loadTexture("Textures/Terrain/splat/dirt.jpg");
+		dirt.setWrap(WrapMode.Repeat);
+		
+		Texture grass = assetManager.loadTexture("Textures/Terrain/splat/grass.jpg");
 		grass.setWrap(WrapMode.Repeat);
 		
 		//Texture grassNormal = assetManager.loadTexture("Textures/Terrain/splat/dirt_normal.png");
@@ -128,12 +131,14 @@ public class TerrainTest extends SimpleApplication{
 		//make a really big texture
 		Image image = grass.getImage();
 		
-		Texture alpha = assetManager.loadTexture("Textures/red.png");
+		Texture alpha = assetManager.loadTexture("Textures/yellow_norm.png");
 		mat.setTexture("AlphaMap", alpha);
 		
 		
 		mat.setTexture("DiffuseMap", grass);
 		mat.setFloat("DiffuseMap_0_scale", 64f);
+		mat.setTexture("DiffuseMap_1", dirt);
+		mat.setFloat("DiffuseMap_1_scale", 8f);
 		
 		mat.setTexture("NormalMap", grassNormal);
 		
@@ -213,7 +218,7 @@ public class TerrainTest extends SimpleApplication{
 		//add a light
 		sun = new DirectionalLight();
 		sun.setColor(ColorRGBA.White.mult(0.7f));
-		sun.setDirection(new Vector3f(-1f, -1.0f, 0).normalizeLocal());
+		sun.setDirection(new Vector3f(0f, -1.0f, 0f).normalizeLocal());
 		rootNode.addLight(sun);
 		
 		AmbientLight al = new AmbientLight();
@@ -234,7 +239,7 @@ public class TerrainTest extends SimpleApplication{
 			theta += 0.01;//0.1 * Math.PI;
 		}
 		
-		//sun.setDirection(new Vector3f(-1f, (float) -Math.cos(theta), (float) Math.sin(theta)).normalizeLocal());
+		sun.setDirection(new Vector3f(-1f, (float) -Math.cos(theta), (float) Math.sin(theta)).normalizeLocal());
 	}
 	
 	
